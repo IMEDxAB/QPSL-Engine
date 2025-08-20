@@ -1,0 +1,74 @@
+// ** QPSL Engine: Motorcycle Race **
+// Everything in this code is instantiated and ready; it just applies commands.
+
+program "Motorcycle_Race" with (
+    // 1. Instantiate ready-made world objects
+    spawn (track) as "RaceTrack" from (library: "Bahrain_International_Circuit");
+
+    // Instantiate spectators that interact automatically
+    spawn (crowd) as "Crowd_Model" with (
+        behavior: "Interactive_Cheering",
+        position: {x: 0, y: 0, z: 0}
+    );
+
+    // 2. Build players as objects
+    // Build the human player
+    build (player) as "Player" with (
+        id: "human_player_01",
+        name: "Jamil"
+    );
+
+    // Build the AI player
+    build (AI_player) as "AI_Pilot" with (
+        id: "AI_pilot_01",
+        name: "QPSL_Racer"
+    );
+
+    // 3. Instantiate motorcycles and link them to players
+    // Instantiate the human player's bike
+    spawn (player_bike) as "Harley_Davidson" with (
+        model: "Street_Glide",
+        id: "Player1_Bike",
+        driver: (player)
+    );
+
+    // Instantiate the AI Racing bike
+    spawn (AI_bike) as "Racing_Bike" with (
+        model: "Suzuki_GSX_R1000",
+        id: "AI_Racer_Bike",
+        driver: (AI_player)
+    );
+
+    // 4. Control and Simulation
+
+    // Link keyboard inputs to the human player
+    ctl (player_bike) > (accelerate) on (keyboard.key_W);
+    ctl (player_bike) > (brake) on (keyboard.key_S);
+    ctl (player_bike) > (steer) with (keyboard.key_A: left, keyboard.key_D: right);
+
+    // Control the AI
+    ctl (AI_bike) > (ai_control) with (
+        mode: "racing_strategy"
+    );
+
+    // Start the simulation
+    simulate (race) with (
+        start_time: "2025-08-20T17:00:00Z",
+        environment: (
+            weather: "Sunny",
+            location: "Bahrain"
+        ),
+        on_collision: (player_bike, AI_bike) then (
+            trigger (crash_physics);
+            play (sound: "crash");
+        ),
+        on_event: (player_bike reaches "Finish_Line") then (
+            end (game) with (status: "Player_Win");
+        )
+    );
+
+    // 5. Rendering
+    render (scene) as (visual: "3D_Render") with (
+        camera: (follow: player_bike)
+    );
+);
