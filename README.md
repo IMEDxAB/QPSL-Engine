@@ -1,5 +1,6 @@
 # QPSL Engine: An Integrated Physical Simulation Engine
 
+Licensing: This project is licensed under the GNU General Public License version 3.0."
 ## Introduction
 
 **QPSL** is more than a programming language; it is a **live simulation platform**. In this world, every object is a physical entity that knows its properties, from the atoms of an engine to raindrops. Our goal is to empower developers to build incredibly realistic worlds without the need for complex physics code.
